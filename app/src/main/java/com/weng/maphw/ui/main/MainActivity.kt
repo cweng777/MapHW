@@ -20,22 +20,19 @@ import com.weng.maphw.ui.map.MapsActivity
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        private const val RC_SIGN_IN = 0
-    }
-
     private lateinit var binding: ActivityMainBinding
-
     private lateinit var mGoogleSignInClient: GoogleSignInClient
-
     private lateinit var startForSignInResult: ActivityResultLauncher<Intent>
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        initializeGoogleSignInVariables()
+        bindEvents()
+    }
 
+    private fun initializeGoogleSignInVariables() {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         // Configure sign-in to request the user's ID, email address, and basic
@@ -57,8 +54,6 @@ class MainActivity : AppCompatActivity() {
                 handleSignInResult(task)
             }
         }
-
-        bindEvents()
     }
 
     private fun bindEvents() {
@@ -73,7 +68,6 @@ class MainActivity : AppCompatActivity() {
     private fun signIn() {
         val signInIntent = mGoogleSignInClient.signInIntent
         startForSignInResult.launch(signInIntent)
-//        startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
     private fun signOut() {
@@ -90,7 +84,6 @@ class MainActivity : AppCompatActivity() {
                     " personId: ${account.displayName}" +
                     " personId: ${account.id}")
             // Signed in successfully, show authenticated UI.
-//            updateUI(account)
             val intent = Intent(this@MainActivity, MapsActivity::class.java)
             startActivity(intent)
         } catch (e: ApiException) {
@@ -99,14 +92,4 @@ class MainActivity : AppCompatActivity() {
             Log.w("Error", "signInResult:failed code=" + e.statusCode)
         }
     }
-
-//    override fun onStart() {
-//        super.onStart()
-//        // Check for existing Google Sign In account, if the user is already signed in
-//        // the GoogleSignInAccount will be non-null.
-//        // Check for existing Google Sign In account, if the user is already signed in
-//        // the GoogleSignInAccount will be non-null.
-//        val account = GoogleSignIn.getLastSignedInAccount(this)
-//        //updateUI(account)
-//    }
 }

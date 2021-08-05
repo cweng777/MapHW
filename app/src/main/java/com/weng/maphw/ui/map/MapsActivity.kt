@@ -48,22 +48,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private var isFirstTimeToThisPage = true
 
     private val viewModel by viewModel<MapsViewModel>()
-//-----------------------play service location-----------------------------------------
-
-//    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
-//    private val locationCallback = object : LocationCallback() {
-//        @SuppressLint("MissingPermission")
-//        override fun onLocationResult(locationResult: LocationResult) {
-//           val location = locationResult.lastLocation
-//            Log.d("point", "(${location.latitude},${location.longitude})")
-//            moveCamera(LatLng(location.latitude, location.longitude), 14f)
-//            if (this@MapsActivity::mMap.isInitialized) {
-//                mMap.isMyLocationEnabled = true
-//            }
-//        }
-//    }
-//-------------------------------------------------------------------------------------
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,10 +60,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         getLocation()
         subscribeUI()
-        viewModel.getCoordinates()
+        initMap()
     }
 
     private fun subscribeUI() {
+        //用api回傳的GeoJson座標,繪製polygon
         viewModel.coordinates.observe(this) {
             if (this@MapsActivity::mMap.isInitialized) {
                 mMap.addPolygon(
@@ -92,41 +77,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private fun getLocation() {
         if (checkPermission()) {
             if (isLocationEnabled()) {
-
-                //-----------------------play service location-----------------------------------------
-//                val locationRequest = LocationRequest.create().apply {
-//                    interval = 1000
-//                    fastestInterval = 1000
-//                    priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-//                    maxWaitTime= 1000
-//                }
-//
-//                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-//                fusedLocationProviderClient.requestLocationUpdates(
-//                    locationRequest,
-//                    locationCallback,
-//                    Looper.getMainLooper()
-//                )
-//                initMap()
-                //-------------------------------------------------------------------------------------
-
                 provider = getBestProvider()
-
                 if (provider.isNotEmpty()) {
                     locationManager.requestLocationUpdates(
                         provider, 1000, 5f, this
                     )
-
-//                    locationManager.requestLocationUpdates(
-//                        provider, 500, 5f
-//                    ) { location ->
-//                        Log.d("point", "(${location.latitude},${location.longitude})")
-//                        moveCamera(LatLng(location.latitude, location.longitude), 14f)
-//                        if (this@MapsActivity::mMap.isInitialized) {
-//                            mMap.isMyLocationEnabled = true
-//                        }
-//                    }
-                    initMap()
                 }
             } else {
                 Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show()
@@ -171,7 +126,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         mapFragment.getMapAsync(this)
     }
 
-    @SuppressLint("MissingPermission")
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+        viewModel.getCoordinates()
+    }
+
     private fun isLocationEnabled(): Boolean {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
@@ -217,42 +184,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-
-//        // Add polylines to the map. Test only
-//        // Polylines are useful to show a route or some other connection between points.
-//        val polyline1 = googleMap.addPolyline(
-//            PolylineOptions()
-//            .clickable(true)
-//            .add(
-//                LatLng(25.007293, 121.516600),
-//                LatLng(25.009971, 121.518032),
-//                LatLng(25.008970, 121.520661)
-//            )
-//        )
-//        // and set the zoom factor so most of Australia shows on the screen.
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(25.006253, 121.519915), 14f))
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //-----------------------play service location-----------------------------------------
-//        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-        //-------------------------------------------------------------------------------------
-
-        locationManager.removeUpdates(this)
-    }
-
     @SuppressLint("MissingPermission")
     override fun onLocationChanged(location: Location) {
         Log.d("point", "(${location.latitude},${location.longitude})")
@@ -264,6 +195,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         if (this@MapsActivity::mMap.isInitialized) {
             mMap.isMyLocationEnabled = true
 
+            //標註使用者最新的 10 個 GPS 軌跡, 這邊的理解是畫新的10個location點軌跡,每1秒或5公尺取一次location
             if (locationList.size in 1..10) {
                 mMap.addPolyline(
                     PolylineOptions()
@@ -277,17 +209,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
                 )
             }
         }
-
-        //test only
-//       mMap.addPolyline(
-//            PolylineOptions()
-//            .add(
-//                LatLng(25.007293, 121.516600),
-//                LatLng(25.009971, 121.518032),
-//                LatLng(25.008970, 121.520661)
-//            )
-//        )
-
         locationManager.requestLocationUpdates(provider, 1000, 5f, this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        locationManager.removeUpdates(this)
     }
 }

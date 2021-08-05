@@ -9,6 +9,9 @@ class GeoRepositoryImpl(
     private val geoJsonApiWeb: GeoJsonApiWeb
 ): GeoRepository {
 
+    /**
+     * 呼叫GeoJson api, 取的GeoData後, 取出GeoJson座標存入List<LatLng>
+     */
     override suspend fun getCoordinates(): Result<List<LatLng>> = withContext(Dispatchers.Default) {
         geoJsonApiWeb.getGeoJsonData().mapCatching {
             val getList = mutableListOf<LatLng>()
