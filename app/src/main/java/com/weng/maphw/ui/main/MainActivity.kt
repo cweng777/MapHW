@@ -14,7 +14,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.weng.maphw.R
 import com.weng.maphw.databinding.ActivityMainBinding
 import com.weng.maphw.ui.map.MapsActivity
 
@@ -29,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mGoogleSignInClient: GoogleSignInClient
 
-    private lateinit var startForResult: ActivityResultLauncher<Intent>
+    private lateinit var startForSignInResult: ActivityResultLauncher<Intent>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,19 +47,9 @@ class MainActivity : AppCompatActivity() {
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        binding.signInButton.setOnClickListener {
-            when (it.id) {
-                R.id.sign_in_button -> {
-                    signIn()
-                }
-            }
-        }
 
-        binding.signOutButton.setOnClickListener {
-            signOut()
-        }
-
-        startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        //set up startActivityForResult for google sign in
+        startForSignInResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
                 val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(
                     it.data
@@ -68,11 +57,22 @@ class MainActivity : AppCompatActivity() {
                 handleSignInResult(task)
             }
         }
+
+        bindEvents()
+    }
+
+    private fun bindEvents() {
+        binding.signInButton.setOnClickListener {
+            signIn()
+        }
+        binding.signOutButton.setOnClickListener {
+            signOut()
+        }
     }
 
     private fun signIn() {
         val signInIntent = mGoogleSignInClient.signInIntent
-        startForResult.launch(signInIntent)
+        startForSignInResult.launch(signInIntent)
 //        startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 

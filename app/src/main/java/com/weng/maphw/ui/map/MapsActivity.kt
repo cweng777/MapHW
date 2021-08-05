@@ -16,6 +16,7 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Observer
 import com.google.android.gms.location.*
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -24,12 +25,14 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolygonOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.weng.maphw.R
 import com.weng.maphw.databinding.ActivityMapsBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
@@ -44,6 +47,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private val locationList = ArrayList<LatLng>()
     private var isFirstTimeToThisPage = true
 
+    private val viewModel by viewModel<MapsViewModel>()
 //-----------------------play service location-----------------------------------------
 
 //    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -67,11 +71,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-
+        //create locationManager, not available before onCreate
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         getLocation()
+        subscribeUI()
+        viewModel.getCoordinates()
+    }
+
+    private fun subscribeUI() {
+        viewModel.coordinates.observe(this) {
+            if (this@MapsActivity::mMap.isInitialized) {
+                mMap.addPolygon(
+                    PolygonOptions()
+                        .addAll(it))
+            }
+        }
     }
 
     private fun getLocation() {
@@ -101,7 +116,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
                     locationManager.requestLocationUpdates(
                         provider, 1000, 5f, this
                     )
-
 
 //                    locationManager.requestLocationUpdates(
 //                        provider, 500, 5f
