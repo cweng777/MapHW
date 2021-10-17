@@ -1,9 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.map.MapsActivity" />
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom_guideLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        map:layout_constraintGuide_percent="0.8"/>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        tools:context=".ui.map.MapsActivity"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintTop_toTopOf="parent"
+        map:layout_constraintBottom_toBottomOf="@id/bottom_guideLine" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map2"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        tools:context=".ui.map.MapsActivity"
+        map:layout_constraintStart_toStartOf="@id/map"
+        map:layout_constraintBottom_toBottomOf="@id/map" />
+
+    <View
+        android:id="@+id/map2_cover_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        map:layout_constraintStart_toStartOf="@id/map2"
+        map:layout_constraintEnd_toEndOf="@id/map2"
+        map:layout_constraintTop_toTopOf="@id/map2"
+        map:layout_constraintBottom_toBottomOf="@id/map2"/>
+
+    <TextView
+        android:id="@+id/welcome_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="歡迎使用地圖"
+        android:textSize="16sp"
+        map:layout_constraintTop_toBottomOf="@id/bottom_guideLine"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintEnd_toEndOf="parent"/>
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/customRatingBar"
+        android:rating="2.5"
+        android:numStars="5"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintTop_toBottomOf="@id/bottom_guideLine"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

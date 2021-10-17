@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="300dp"
+        android:layout_height="150dp">
+
+        <TextView
+            android:id="@+id/title_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#424242"
+            android:textSize="30sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="標題"/>
+
+        <View
+            android:id="@+id/left_background_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:background="@color/purple_200"
+            app:layout_constraintTop_toBottomOf="@id/title_textView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/right_background_view"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <View
+            android:id="@+id/right_background_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:background="@color/teal_200"
+            app:layout_constraintTop_toBottomOf="@id/title_textView"
+            app:layout_constraintStart_toEndOf="@id/left_background_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:id="@+id/content_a_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="內容A"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@id/left_background_view"
+            app:layout_constraintEnd_toEndOf="@id/left_background_view"
+            app:layout_constraintTop_toTopOf="@id/left_background_view"
+            app:layout_constraintBottom_toTopOf="@id/content_a_value"/>
+        <TextView
+            android:id="@+id/content_a_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/content_a_title"
+            app:layout_constraintStart_toStartOf="@id/left_background_view"
+            app:layout_constraintEnd_toEndOf="@id/left_background_view"
+            app:layout_constraintBottom_toBottomOf="@id/left_background_view"
+            tools:text="這是一個內容Axxxxxxxxxxxx"/>
+
+        <TextView
+            android:id="@+id/content_b_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="內容B"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@id/right_background_view"
+            app:layout_constraintEnd_toEndOf="@id/right_background_view"
+            app:layout_constraintTop_toTopOf="@id/right_background_view"
+            app:layout_constraintBottom_toTopOf="@id/content_b_value"/>
+        <TextView
+            android:id="@+id/content_b_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/content_b_title"
+            app:layout_constraintStart_toStartOf="@id/right_background_view"
+            app:layout_constraintEnd_toEndOf="@id/right_background_view"
+            app:layout_constraintBottom_toBottomOf="@id/right_background_view"
+            tools:text="這是一個內容B"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
